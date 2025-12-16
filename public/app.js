@@ -13,6 +13,9 @@ let livePrices = {};
 let priceHistory = {}; // { SYMBOL: [prices...] }
 let mainChart = null;
 
+// 🔥 NEW: track selected stock for main graph
+let selectedStockForMainGraph = null;
+
 // UI Elements
 const loginView = document.getElementById("loginView");
 const dashboardView = document.getElementById("dashboardView");
@@ -54,7 +57,12 @@ function init() {
 
   searchInput.oninput = handleSearch;
   searchResults.onclick = onSearchResultClick;
-  graphSelector.onchange = updateMainChart;
+
+  // 🔥 UPDATED: dropdown only sets selected stock
+  graphSelector.onchange = () => {
+    selectedStockForMainGraph = graphSelector.value;
+    redrawMainGraph();
+  };
 
   setupMainChart();
 }
@@ -83,6 +91,7 @@ function logout() {
   mySubs.clear();
   livePrices = {};
   priceHistory = {};
+  selectedStockForMainGraph = null;
 
   dashboardView.style.display = "none";
   loginView.style.display = "block";
@@ -158,9 +167,8 @@ function onSubTableClick(e) {
   renderSubscribed();
 }
 
-/* ---------------- WEBSOCKET (FIXED) ---------------- */
+/* ---------------- WEBSOCKET ---------------- */
 function connectWebSocket() {
-  // 🔥 IMPORTANT FIX: ws / wss auto-switch
   const protocol = location.protocol === "https:" ? "wss" : "ws";
   ws = new WebSocket(`${protocol}://${location.host}`);
 
@@ -175,8 +183,9 @@ function connectWebSocket() {
     if (msg.type === "prices") {
       Object.assign(livePrices, msg.prices);
       updateHistory(msg.prices);
-      renderSubscribed();
-      updateMainChart();
+
+      renderSubscribed();   // updates table + small graphs
+      redrawMainGraph();   // 🔥 updates MAIN graph every second
     }
   };
 
@@ -254,20 +263,23 @@ function setupMainChart() {
       }]
     },
     options: {
+      animation: false, // 🔥 smoother real-time
       plugins: { legend: { display: true } },
       scales: { x: { display: false } }
     }
   });
 }
 
-function updateMainChart() {
-  const selected = graphSelector.value;
-  if (!selected) return;
+function redrawMainGraph() {
+  if (!selectedStockForMainGraph) return;
 
-  const data = priceHistory[selected] || [];
+  const data = priceHistory[selectedStockForMainGraph] || [];
+
   mainChart.data.labels = data.map((_, i) => i);
   mainChart.data.datasets[0].data = data;
-  mainChart.data.datasets[0].label = `${selected} Price`;
+  mainChart.data.datasets[0].label =
+    `${selectedStockForMainGraph} Price`;
+
   mainChart.update();
 }
 
