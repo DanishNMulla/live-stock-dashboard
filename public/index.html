@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Live Stock Dashboard — Glass UI</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <main class="page">
+
+    <!-- LOGIN CARD -->
+    <section id="loginView" class="card login-card">
+      <div class="brand">
+        <div class="logo">📈</div>
+        <h1>LIVE STOCK DASHBOARD</h1>
+      </div>
+
+      <p class="sub">Sign in with your Gmail to get live simulated stock prices</p>
+
+      <input id="emailInput" type="email" placeholder="you@gmail.com" autocomplete="off" />
+      <p id="emailError" class="error-msg"></p>
+
+      <button id="loginBtn" class="btn primary large">Sign in</button>
+
+      <p class="hint">Open two windows/incognito and sign in with different Gmail accounts to simulate two clients.</p>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboardView" class="grid" style="display:none;">
+      <!-- Sidebar: Supported stocks + Search -->
+      <aside class="card sidebar">
+        <div class="sidebar-top">
+          <h2>Search Stocks</h2>
+          <input id="searchInput" placeholder="Search (e.g. GOOG, AAPL)"/>
+          <ul id="searchResults" class="search-results"></ul>
+        </div>
+
+        <div class="supported">
+          <h3>Supported</h3>
+          <ul id="supportedList" class="supported-list"></ul>
+        </div>
+      </aside>
+
+      <!-- Main content: Subscriptions + Graph -->
+      <div class="card main">
+        <div class="top-row">
+          <div>
+            <h2>Subscribed Stocks</h2>
+            <table id="subTable" class="sub-table">
+              <thead>
+                <tr><th>Stock</th><th>Price</th><th>Trend</th><th>Action</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="user-box">
+            <div class="user-line">
+              <div class="user-label">User</div>
+              <div id="userEmail" class="user-email">—</div>
+            </div>
+            <button id="logoutBtn" class="btn danger">Logout</button>
+          </div>
+        </div>
+
+        <div class="graph-panel">
+          <div class="graph-controls">
+            <label for="graphSelector">View:</label>
+            <select id="graphSelector" class="select"></select>
+            <div id="statusMsg" class="status"></div>
+          </div>
+          <canvas id="priceChart" height="160"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
